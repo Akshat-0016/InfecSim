@@ -2,6 +2,8 @@ import random
 from models.status import Status
 from data.mutation import MUTATIONS
 from engine.travel import travel_spread
+from engine.history import History
+from world.world_graph import display_world 
 
 def simulate_day(state, virus):
 
@@ -9,10 +11,10 @@ def simulate_day(state, virus):
 
     state.government.daily_update()
 
-    print(
+    '''print(
     f"{state.name} lockdown: "
     f"{state.government.lockdown_strength}"
-)
+)'''
 
     infected_people = [
         h for h in state.population
@@ -52,22 +54,95 @@ def simulate_day(state, virus):
 class Simulation:
 
     def run(self, states, virus, routes, days):
+        history = History()
+
         for day in range(days):
+
+            for state in states:
+
+                simulate_day(state, virus)
 
             travel_spread(routes)
 
-            print(f"\n===== Day {day+1} =====")
-            for state in states:
-            
-                simulate_day(state, virus)
+            total_inf = 0
+            total_dead = 0
+
+            total_gdp = 0
+            total_support = 0
 
             for state in states:
 
+                healthy, infected, dead = (
+                    state.get_stats()
+                )
 
-                state.stats()
+                total_inf += infected
+                total_dead += dead
+
+                total_gdp += (
+                    state.government.economy.gdp
+                )
+
+                total_support += (
+                    state.government.public_support
+                )
+
+                history.store(
+                    day + 1,
+                    state.name,
+                    healthy,
+                    infected,
+                    dead,
+                    state.government.economy.gdp,
+                    state.government.public_support
+                )
+
+            avg_gdp = total_gdp / len(states)
+
+            avg_support = (
+                total_support / len(states)
+            )
 
             if random.random() < 0.05:
 
-                mutation = random.choice(MUTATIONS)
+                virus.add_mutation(
+                    random.choice(MUTATIONS)
+                )
 
-                virus.add_mutation(mutation)
+            if (day + 1) % 15 == 0:
+                for state in states:
+                    bar = "█" * int(
+                        infected / 100         #BAR ins not working
+                    )
+
+                    print(
+                        f"{state.name}: "
+                        f"{bar}"
+                    )
+                
+
+                print(f"""
+        =================================
+        DAY {day+1}
+        =================================
+
+        Total Infected: {total_inf}
+        Total Dead: {total_dead}
+
+        Average GDP: {avg_gdp:.2f}
+        Average Support: {avg_support:.2f}
+
+        Virus Infectivity: {virus.infectivity:.3f}
+        Virus Mortality: {virus.mortality:.3f}
+
+        =================================
+        """)
+        history.graph()
+
+        history.gdp_graph()
+
+        history.support_graph()
+
+        display_world(routes)
+
+                

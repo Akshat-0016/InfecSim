@@ -86,3 +86,22 @@ Lockdown : {self.government.lockdown_strength:.2f}
 Support : {self.government.public_support:.2f}
 GDP : {self.government.economy.gdp:.2f}
 """)
+    
+    def get_stats(self):
+
+        healthy = 0
+        infected = 0
+        dead = 0
+
+        for human in self.population:
+
+            if human.status == Status.HEALTHY:
+                healthy += 1
+
+            elif human.status == Status.INFECTED:
+                infected += 1
+
+            elif human.status == Status.DEAD:
+                dead += 1
+
+        return healthy, infected, dead

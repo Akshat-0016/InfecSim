@@ -9,6 +9,8 @@ from data.mutation import MUTATIONS
 
 from engine.sim import simulate_day, Simulation
 from engine.travel import travel_spread
+from engine.history import History
+from data.db import clear_db
 
 virus = Virus(
     "zvirus",
@@ -36,15 +38,20 @@ states[0].population[0].infect()
 
 routes = [
 
-    Route(states[0], states[1], 100),
+    Route(states[0], states[1], 120),
+    Route(states[0], states[2], 80),
 
     Route(states[1], states[2], 100),
+    Route(states[1], states[3], 70),
 
-    Route(states[2], states[3], 100),
+    Route(states[2], states[3], 150),
+    Route(states[2], states[4], 90),
 
-    Route(states[3], states[4], 100)
+    Route(states[3], states[4], 110)
 
 ]
+
+clear_db()
 
 simulation = Simulation()
 
