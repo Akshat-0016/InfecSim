@@ -9,19 +9,19 @@ class Virus:
     def add_mutation(self, mutation):
 
         mutation.apply(self)
-        self.infectivity = min(
-            1,
-            max(0, self.infectivity)
+        self.infectivity = max(
+            0,
+            min(1, self.infectivity)
         )
 
-        self.mortality = min(
-            1,
-            max(0, self.mortality)
+        self.mortality = max(
+            0.001,
+            min(1, self.mortality)
         )
 
-        self.recovery = min(
-            1,
-            max(0, self.recovery)
+        self.recovery = max(
+            0,
+            min(1, self.recovery)
         )
 
         self.mutations.append(mutation)

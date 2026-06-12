@@ -21,11 +21,31 @@ virus = Virus(
 
 states = []
 
+government_types = [
+
+    "democracy",
+
+    "authoritarian",
+
+    "technocracy",
+
+    "democracy",
+
+    "technocracy"
+
+]
+
 for i in range(5):
 
     state = State(
+
         f"state_{i+1}",
-        1000
+
+        1000,
+
+        government_type=
+        government_types[i]
+
     )
 
     for _ in range(1000):
@@ -50,6 +70,21 @@ routes = [
     Route(states[3], states[4], 110)
 
 ]
+
+government_types = [
+
+    "democracy",
+
+    "authoritarian",
+
+    "technocracy",
+
+    "democracy",
+
+    "technocracy"
+
+]
+
 
 clear_db()
 

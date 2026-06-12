@@ -22,6 +22,8 @@ class Government:
 
         self.economy = Economy()
 
+        self.total_deaths_seen = 0
+
         self.ai = ai or DemocracyAI()
 
     def decide(self, state):
@@ -62,6 +64,11 @@ class Government:
             strength * 2
         )
 
+        self.public_support = max(
+            0,
+            self.public_support
+        )
+
     def improve_healthcare(
         self,
         amount
@@ -81,8 +88,8 @@ class Government:
     def effective_lockdown(self):
 
         return (
-            self.lockdown_strength
-            * self.compliance
+            self.lockdown_strength *
+            (0.3 + self.public_support / 100)
         )
 
     def daily_update(self):
@@ -99,6 +106,11 @@ class Government:
         self.public_support -= (
             self.lockdown_strength
             * 0.1
+        )
+
+        self.public_support = max(
+            0,
+            self.public_support
         )
 
         self.economy.daily_update(

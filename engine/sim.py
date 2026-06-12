@@ -4,6 +4,8 @@ from data.mutation import MUTATIONS
 from engine.travel import travel_spread
 from engine.history import History
 from world.world_graph import display_world 
+from engine.network_map import generate_world_map
+from events.events import EVENTS
 
 def simulate_day(state, virus):
 
@@ -43,8 +45,9 @@ def simulate_day(state, virus):
 
         effective_recovery = (
             virus.recovery *
-            state.government.healthcare_boost
-        )   * state.density
+            state.government.healthcare_boost *
+            state.healthcare
+        ) / state.density
         if random.random() < virus.mortality:
             human.die()
 
@@ -55,6 +58,9 @@ class Simulation:
 
     def run(self, states, virus, routes, days):
         history = History()
+
+        display_world(routes)
+        
 
         for day in range(days):
 
@@ -72,9 +78,7 @@ class Simulation:
 
             for state in states:
 
-                healthy, infected, dead = (
-                    state.get_stats()
-                )
+                healthy, infected, dead = state.get_stats()
 
                 total_inf += infected
                 total_dead += dead
@@ -109,16 +113,29 @@ class Simulation:
                     random.choice(MUTATIONS)
                 )
 
+            if random.random() < 0.03:
+
+                event = random.choice(
+                    EVENTS
+                )
+
+                event.apply(
+                    states,
+                    virus
+                )
+
             if (day + 1) % 15 == 0:
                 for state in states:
-                    bar = "█" * int(
-                        infected / 100         #BAR ins not working
-                    )
+                    '''bar = "█" * max(
+                        1,
+                        int(infected / 100)
+                    ) if infected > 0 else ""
+
 
                     print(
                         f"{state.name}: "
                         f"{bar}"
-                    )
+                    )'''
                 
 
                 print(f"""
@@ -137,12 +154,57 @@ class Simulation:
 
         =================================
         """)
+                for state in states:
+
+                    healthy, infected, dead = (
+                        state.get_stats()
+                    )
+
+                    pct = (
+                        infected /
+                        state.population_size
+                        * 100
+                        +
+                        dead /
+                        state.population_size
+                        * 100
+                    )
+
+                    bar = (
+                        "█" *
+                        int(pct / 5)
+                    )
+
+                    gov_name = type(
+                        state.government.ai
+                    ).__name__
+
+                    print(
+                        f"""
+                {state.name}
+
+                {bar}
+
+                Healthy  : {healthy}
+                Infected : {infected}
+                Dead     : {dead}
+
+                GDP      : {state.government.economy.gdp:.1f}
+                Support  : {state.government.public_support:.1f}
+
+                Lockdown : {state.government.lockdown_strength:.1f}
+
+                Government : {gov_name}
+                """
+                    )
         history.graph()
 
         history.gdp_graph()
 
         history.support_graph()
 
-        display_world(routes)
-
+        generate_world_map(
+            states,
+            routes
+        )
                 

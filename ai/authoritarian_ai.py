@@ -9,7 +9,19 @@ class AuthoritarianAI(GovernmentAI):
         state
     ):
 
-        infected_ratio = state.count_infected()
+        healthy, infected, dead = (
+            state.get_stats()
+        )
+
+        infected_ratio = (
+            infected /
+            state.population_size
+        )
+
+        dead_ratio = (
+            dead /
+            state.population_size
+        )
 
         actions = [0, 0.3, 0.6, 0.9]
 
@@ -37,6 +49,7 @@ class AuthoritarianAI(GovernmentAI):
                 projected_gdp
                 + projected_support * 0.2
                 - projected_infections * 200
+                - dead_ratio * 300
             )
 
             if score > best_score:
