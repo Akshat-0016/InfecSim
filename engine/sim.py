@@ -1,10 +1,12 @@
 import random
+import time
+
 from models.status import Status
 from data.mutation import MUTATIONS
 from engine.travel import travel_spread
 from engine.history import History
 from world.world_graph import display_world 
-from engine.network_map import generate_world_map
+from engine.network_map import update_world_map
 from events.events import EVENTS
 
 def simulate_day(state, virus):
@@ -69,6 +71,12 @@ class Simulation:
                 simulate_day(state, virus)
 
             travel_spread(routes)
+
+            update_world_map(
+                states,
+                routes
+            )
+            time.sleep(0.15)
 
             total_inf = 0
             total_dead = 0
@@ -203,8 +211,4 @@ class Simulation:
 
         history.support_graph()
 
-        generate_world_map(
-            states,
-            routes
-        )
                 

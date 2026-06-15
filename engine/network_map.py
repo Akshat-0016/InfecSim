@@ -1,8 +1,31 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
+plt.ion()
 
-def generate_world_map(states, routes):
+fig, ax = plt.subplots(
+    figsize=(10, 8)
+)
+
+# Fixed map layout
+POSITIONS = {
+
+    "state_1": (0, 2),
+
+    "state_2": (2, 3),
+
+    "state_3": (2, 1),
+
+    "state_4": (4, 2),
+
+    "state_5": (3, -1)
+
+}
+
+
+def update_world_map(states, routes):
+
+    ax.clear()
 
     G = nx.Graph()
 
@@ -18,58 +41,68 @@ def generate_world_map(states, routes):
         ) / state.population_size
 
         G.add_node(
-            state.name,
+            f"{state.name}\nI:{infected}\nD:{dead}",
             impact=impact
         )
 
     # Add routes
     for route in routes:
 
-        G.add_edge(
-            route.source.name,
-            route.destination.name,
-            weight=route.daily_travellers
-        )
+        source = route.source.name
+        destination = route.destination.name
 
-    # Color nodes by impact
-    node_colors = []
+        source_label = None
+        destination_label = None
+
+        for node in G.nodes:
+
+            if node.startswith(source):
+                source_label = node
+
+            if node.startswith(destination):
+                destination_label = node
+
+        if source_label and destination_label:
+
+            G.add_edge(
+                source_label,
+                destination_label,
+                weight=route.daily_travellers
+            )
+
+    # Node colors
+    node_colors = [
+
+        G.nodes[node]["impact"]
+
+        for node in G.nodes
+    ]
+
+    # Fixed positions
+    pos = {}
 
     for node in G.nodes:
 
-        impact = G.nodes[node]["impact"]
+        state_name = node.split("\n")[0]
 
-        if impact < 0.25:
-            node_colors.append("green")
-
-        elif impact < 0.50:
-            node_colors.append("yellow")
-
-        elif impact < 0.75:
-            node_colors.append("orange")
-
-        else:
-            node_colors.append("red")
-
-    plt.figure(
-        figsize=(10, 8)
-    )
-
-    pos = nx.spring_layout(
-        G,
-        seed=42
-    )
+        pos[node] = POSITIONS[
+            state_name
+        ]
 
     nx.draw_networkx_nodes(
         G,
         pos,
         node_color=node_colors,
-        node_size=2000
+        cmap=plt.cm.Reds,
+        vmin=0,
+        vmax=1,
+        node_size=3500
     )
 
     nx.draw_networkx_labels(
         G,
         pos,
-        font_size=10
+        font_size=8
     )
 
     nx.draw_networkx_edges(
@@ -86,17 +119,16 @@ def generate_world_map(states, routes):
     nx.draw_networkx_edge_labels(
         G,
         pos,
-        edge_labels=edge_labels
+        edge_labels=edge_labels,
+        font_size=8
     )
 
-    plt.title(
-        "World Infection Network"
+    ax.set_title(
+        "Live Epidemic Spread"
     )
 
-    plt.axis("off")
+    ax.axis("off")
 
-    plt.savefig(
-        "world_map.png"
-    )
+    plt.draw()
 
-    plt.close()
+    plt.pause(0.001)
