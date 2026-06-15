@@ -42,7 +42,7 @@ class TechnocracyAI(GovernmentAI):
 
             score = (
                 projected_gdp
-                - projected_infections * 300
+                - projected_infections * 500
                 - dead_ratio * 500
             )
 

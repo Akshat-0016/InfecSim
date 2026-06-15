@@ -8,6 +8,7 @@ from engine.history import History
 from world.world_graph import display_world 
 from engine.network_map import update_world_map
 from events.events import EVENTS
+from engine.game_manager import GameManager as gm
 
 def simulate_day(state, virus):
 
@@ -63,12 +64,32 @@ class Simulation:
 
         display_world(routes)
         
+        game_manager = gm()
 
         for day in range(days):
+
+            game_manager.update(states)
+
+            if game_manager.game_over:
+
+                print(
+                    f"\nGAME OVER: "
+                    f"{game_manager.reason}"
+                )
+
+                break
 
             for state in states:
 
                 simulate_day(state, virus)
+
+                if (
+                    state.is_player
+                    and
+                    state.government.collapsed
+                ):
+
+                    self.game_over = True
 
             travel_spread(routes)
 
@@ -164,6 +185,10 @@ class Simulation:
         """)
                 for state in states:
 
+                    print(
+                        state.name,
+                        state.government.collapsed
+                    )
                     healthy, infected, dead = (
                         state.get_stats()
                     )
@@ -210,5 +235,7 @@ class Simulation:
         history.gdp_graph()
 
         history.support_graph()
+
+        
 
                 

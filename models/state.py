@@ -1,9 +1,13 @@
 from models.status import Status
-from models.govt import Government
+from govt.democracy import Democracy
+from govt.technocracy import Technocracy
+from govt.authoritarian import Authoritarian
 
 from ai.technocracy_ai import TechnocracyAI
 from ai.authoritarian_ai import AuthoritarianAI
 from ai.democracy_ai import DemocracyAI
+
+from govt.democracy import Democracy
 
 
 class State:
@@ -15,7 +19,8 @@ class State:
         government_type="democracy",
         density=1,
         healthcare=1,
-        infrastructure=1
+        infrastructure=1,
+        is_player=False
     ):
 
         self.name = name
@@ -28,20 +33,27 @@ class State:
 
         self.infected_population = []
 
+        self.is_player=is_player
+
         if government_type == "democracy":
-            self.government = Government(
+
+            self.government = Democracy(
                 ai=DemocracyAI()
             )
 
         elif government_type == "authoritarian":
-            self.government = Government(
+
+            self.government = Authoritarian(
                 ai=AuthoritarianAI()
             )
 
         else:
-            self.government = Government(
+
+            self.government = Technocracy(
                 ai=TechnocracyAI()
             )
+
+
     def daily_updates(self):
         print(f"{State.count_infected(self)}% number of ppl infected.")
         

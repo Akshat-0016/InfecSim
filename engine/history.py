@@ -232,3 +232,10 @@ class History:
         )
 
         plt.close()
+
+        input(
+            "\nSimulation finished. Press Enter to close..."
+        )
+
+        plt.ioff()
+        plt.show()

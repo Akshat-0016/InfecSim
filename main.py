@@ -35,7 +35,7 @@ government_types = [
 
 ]
 
-for i in range(5):
+for i in range(4):
 
     state = State(
 
@@ -52,6 +52,17 @@ for i in range(5):
         state.population.append(Human())
 
     states.append(state)
+
+player = State(
+        "state_5",
+        1000,
+        government_type="democracy",
+        is_player=True
+    )
+for _ in range(1000):
+    player.population.append(Human())
+
+states.append(player)
 
 # Patient Zero
 states[0].population[0].infect()
@@ -84,7 +95,6 @@ government_types = [
     "technocracy"
 
 ]
-
 
 clear_db()
 
