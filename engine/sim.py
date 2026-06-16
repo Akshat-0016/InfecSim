@@ -6,9 +6,12 @@ from data.mutation import MUTATIONS
 from engine.travel import travel_spread
 from engine.history import History
 from world.world_graph import display_world 
-from engine.network_map import update_world_map
+#from engine.network_map import update_world_map
 from events.events import EVENTS
 from engine.game_manager import GameManager as gm
+from engine.events_log import EventLog
+
+event_log = EventLog()
 
 def simulate_day(state, virus):
 
@@ -93,10 +96,10 @@ class Simulation:
 
             travel_spread(routes)
 
-            update_world_map(
+            '''update_world_map(
                 states,
                 routes
-            )
+            )'''
             time.sleep(0.15)
 
             total_inf = 0
@@ -138,8 +141,13 @@ class Simulation:
 
             if random.random() < 0.05:
 
+                mutation = random.choice(MUTATIONS)
                 virus.add_mutation(
-                    random.choice(MUTATIONS)
+                    mutation
+                )
+
+                self.event_log.add(
+                    f"Day {self.day}: {virus.name} evolved {mutation.name}"
                 )
 
             if random.random() < 0.03:
@@ -151,6 +159,9 @@ class Simulation:
                 event.apply(
                     states,
                     virus
+                )
+                self.event_log.add(
+                    f"Day {self.day}: {event.name}"
                 )
 
             if (day + 1) % 15 == 0:

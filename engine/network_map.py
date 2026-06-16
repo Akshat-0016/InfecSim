@@ -1,13 +1,5 @@
 import networkx as nx
-import matplotlib.pyplot as plt
 
-plt.ion()
-
-fig, ax = plt.subplots(
-    figsize=(10, 8)
-)
-
-# Fixed map layout
 POSITIONS = {
 
     "state_1": (0, 2),
@@ -23,13 +15,16 @@ POSITIONS = {
 }
 
 
-def update_world_map(states, routes):
+def draw_world(ax, states, routes):
 
     ax.clear()
 
     G = nx.Graph()
 
-    # Add states
+    # =====================
+    # STATES
+    # =====================
+
     for state in states:
 
         healthy, infected, dead = (
@@ -45,7 +40,10 @@ def update_world_map(states, routes):
             impact=impact
         )
 
-    # Add routes
+    # =====================
+    # ROUTES
+    # =====================
+
     for route in routes:
 
         source = route.source.name
@@ -70,7 +68,10 @@ def update_world_map(states, routes):
                 weight=route.daily_travellers
             )
 
-    # Node colors
+    # =====================
+    # COLORS
+    # =====================
+
     node_colors = [
 
         G.nodes[node]["impact"]
@@ -78,7 +79,10 @@ def update_world_map(states, routes):
         for node in G.nodes
     ]
 
-    # Fixed positions
+    # =====================
+    # POSITIONS
+    # =====================
+
     pos = {}
 
     for node in G.nodes:
@@ -89,26 +93,33 @@ def update_world_map(states, routes):
             state_name
         ]
 
+    # =====================
+    # DRAW
+    # =====================
+
     nx.draw_networkx_nodes(
         G,
         pos,
         node_color=node_colors,
-        cmap=plt.cm.Reds,
+        cmap="Reds",
         vmin=0,
         vmax=1,
-        node_size=3500
+        node_size=3500,
+        ax=ax
     )
 
     nx.draw_networkx_labels(
         G,
         pos,
-        font_size=8
+        font_size=8,
+        ax=ax
     )
 
     nx.draw_networkx_edges(
         G,
         pos,
-        width=2
+        width=2,
+        ax=ax
     )
 
     edge_labels = nx.get_edge_attributes(
@@ -120,7 +131,8 @@ def update_world_map(states, routes):
         G,
         pos,
         edge_labels=edge_labels,
-        font_size=8
+        font_size=8,
+        ax=ax
     )
 
     ax.set_title(
@@ -128,7 +140,3 @@ def update_world_map(states, routes):
     )
 
     ax.axis("off")
-
-    plt.draw()
-
-    plt.pause(0.001)

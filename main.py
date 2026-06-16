@@ -7,10 +7,10 @@ from world.route import Route
 
 from data.mutation import MUTATIONS
 
-from engine.sim import simulate_day, Simulation
-from engine.travel import travel_spread
-from engine.history import History
+from engine.sim import Simulation
 from data.db import clear_db
+from ui.main_window import MainWindow
+from engine.sim_manager import SimulationManager
 
 virus = Virus(
     "zvirus",
@@ -82,6 +82,62 @@ routes = [
 
 ]
 
+simulation = Simulation()
+
+manager = SimulationManager(
+    simulation,
+    states,
+    virus,
+    routes
+)
+
+
+window = MainWindow(
+    manager
+)
+
+window.state_panel.update_state(
+    states[0]
+)
+'''
+window.events_feed.add_event(
+    "Day 1: Patient Zero"
+)
+
+window.events_feed.add_event(
+    "Day 3: Festival"
+)
+
+window.events_feed.add_event(
+    "Day 5: Mutation Surge"
+)'''
+
+window.map_panel.update_map(
+    states,
+    routes
+)
+
+window.state_panel.update_state(
+    states[0]
+)
+
+window.run()
+
+routes = [
+
+    Route(states[0], states[1], 120),
+    Route(states[0], states[2], 80),
+
+    Route(states[1], states[2], 100),
+    Route(states[1], states[3], 70),
+
+    Route(states[2], states[3], 150),
+    Route(states[2], states[4], 90),
+
+    Route(states[3], states[4], 110)
+
+]
+
 government_types = [
 
     "democracy",
@@ -98,10 +154,10 @@ government_types = [
 
 clear_db()
 
-simulation = Simulation()
+'''simulation = Simulation()
 
 days=100
-simulation.run(states, virus, routes, days)
+simulation.run(states, virus, routes, days)'''
 
 '''for day in range(100):
 
