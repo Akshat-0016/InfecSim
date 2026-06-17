@@ -1,5 +1,7 @@
 from engine.sim import simulate_day, travel_spread
 from engine.events_log import EventLog
+from engine.game_manager import GameManager
+
 
 class SimulationManager:
 
@@ -11,11 +13,14 @@ class SimulationManager:
         routes
     ):
 
+        self.game = GameManager()
+
         self.simulation = simulation
 
         self.states = states
         self.virus = virus
         self.routes = routes
+
         self.event_log = EventLog()
 
         self.running = False
@@ -44,6 +49,9 @@ class SimulationManager:
     def tick(self):
 
         if not self.running:
+            return
+
+        if self.game.game_over:
             return
 
         self.day += 1
@@ -75,3 +83,20 @@ class SimulationManager:
         travel_spread(
             self.routes
         )
+
+        # =====================
+        # CHECK WIN / LOSS
+        # =====================
+
+        self.game.update(
+            self.states
+        )
+
+        if self.game.game_over:
+
+            self.running = False
+
+            self.event_log.add(
+                f"GAME OVER: "
+                f"{self.game.reason}"
+            )

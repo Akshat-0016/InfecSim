@@ -59,6 +59,13 @@ class StatePanel:
 
         self.support.pack()
 
+        self.capital = tk.Label(
+            self.frame,
+            text="Capital: 0"
+        )
+
+        self.capital.pack()
+
     def update_state(self, state):
 
         healthy, infected, dead = (
@@ -88,3 +95,9 @@ class StatePanel:
         self.support.config(
             text=f"Support: {state.government.public_support:.1f}"
         )   
+
+        self.capital.config(
+            text=f"Political Capital:{state.government.political_capital:.1f}"
+        )
+
+        

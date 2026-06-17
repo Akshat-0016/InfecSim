@@ -4,6 +4,7 @@ from ui.state_panel import StatePanel
 from ui.event_feed import EventFeed
 from ui.control import ControlPanel
 from ui.map_panel import MapPanel
+from ui.action_panel import ActionPanel
 
 class MainWindow:
 
@@ -21,9 +22,21 @@ class MainWindow:
             "1200x800"
         )
 
+        self.selected_state = None
+
         self.create_layout()
 
     def create_layout(self):
+
+        self.day_label = tk.Label(
+            self.root,
+            text="Day: 0",
+            font=("Arial", 12, "bold")
+        )
+
+        self.day_label.pack(
+            pady=5
+        )
 
         # =====================
         # MAP PANEL
@@ -42,9 +55,17 @@ class MainWindow:
             pady=5
         )
 
+        print("creating map panel")
+
         self.map_panel = MapPanel(
             self.map_frame
         )
+
+        self.map_panel.on_state_selected = (
+            self.select_state
+        )
+
+        print("creating state panel")
 
         #self.map_panel.draw_test()
 
@@ -101,6 +122,23 @@ class MainWindow:
             self.events_frame
         )
 
+        self.action_frame = tk.Frame(
+            self.root,
+            relief="solid",
+            borderwidth=1
+        )
+
+        self.action_frame.pack(
+            fill="x",
+            padx=5,
+            pady=5
+        )
+
+        self.action_panel = ActionPanel(
+            self.action_frame,
+            self.manager
+        )
+
         # =====================
         # CONTROL PANEL
         # =====================
@@ -144,13 +182,47 @@ class MainWindow:
             text="CONTROLS"
         ).pack()''' 
 
+        self.status_label = tk.Label(
+            self.root,
+            text="",
+            font=("Arial", 16, "bold")
+        )
+
+        self.status_label.pack()
+
+        self.map_panel.on_state_selected = (
+            self.select_state
+        )
+
+    def select_state(self, state_name):
+
+        for state in self.manager.states:
+
+            if state.name == state_name:
+
+                self.selected_state = state
+
+                self.state_panel.update_state(
+                    state
+                )
+
+                print(
+                    "SELECTED:",
+                    state.name
+                )
+
+                break
+    
+
     def update_loop(self):
 
         self.manager.tick()
 
-        self.state_panel.update_state(
-            self.manager.states[0]
-        )
+        if self.selected_state:
+
+            self.state_panel.update_state(
+                self.selected_state
+            )
 
         self.map_panel.update_map(
             self.manager.states,
@@ -160,6 +232,19 @@ class MainWindow:
         self.events_feed.update_events(
             self.manager.event_log.latest()
         )
+
+        self.day_label.config(
+            text=f"Day: {self.manager.day}"
+        )
+
+        if self.manager.game.game_over:
+
+            self.status_label.config(
+                text=f"GAME OVER: {self.manager.game.reason}",
+                fg="red"
+            )
+
+            return
 
         self.root.after(
             self.manager.speed,

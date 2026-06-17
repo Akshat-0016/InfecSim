@@ -96,6 +96,8 @@ window = MainWindow(
     manager
 )
 
+window.selected_state = states[0]
+
 window.state_panel.update_state(
     states[0]
 )

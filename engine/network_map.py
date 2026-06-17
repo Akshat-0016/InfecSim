@@ -36,8 +36,10 @@ def draw_world(ax, states, routes):
         ) / state.population_size
 
         G.add_node(
-            f"{state.name}\nI:{infected}\nD:{dead}",
-            impact=impact
+            state.name,
+            impact=impact,
+            infected=infected,
+            dead=dead
         )
 
     # =====================
@@ -135,8 +137,28 @@ def draw_world(ax, states, routes):
         ax=ax
     )
 
+    labels = {}
+
+    for node in G.nodes:
+
+        labels[node] = (
+            f"{node}\n"
+            f"I:{G.nodes[node]['infected']}\n"
+            f"D:{G.nodes[node]['dead']}"
+        )
+
+    nx.draw_networkx_labels(
+        G,
+        pos,
+        labels=labels,
+        font_size=8,
+        ax=ax
+    )
+
     ax.set_title(
         "Live Epidemic Spread"
     )
 
     ax.axis("off")
+
+    return pos
