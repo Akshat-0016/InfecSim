@@ -14,6 +14,8 @@ class Protest(Event):
         virus
     ):
 
+        affected = []
+
         for state in states:
 
             if (
@@ -23,7 +25,15 @@ class Protest(Event):
 
                 state.government.public_support -= 10
 
-                print(
-                    f"\nEVENT: Protest in "
-                    f"{state.name}"
+                affected.append(
+                    state.name
                 )
+
+        if affected:
+
+            return (
+                "Protests in "
+                + ", ".join(affected)
+            )
+
+        return None

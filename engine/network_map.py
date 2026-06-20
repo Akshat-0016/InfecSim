@@ -1,19 +1,5 @@
 import networkx as nx
 
-POSITIONS = {
-
-    "state_1": (0, 2),
-
-    "state_2": (2, 3),
-
-    "state_3": (2, 1),
-
-    "state_4": (4, 2),
-
-    "state_5": (3, -1)
-
-}
-
 
 def draw_world(ax, states, routes):
 
@@ -48,27 +34,11 @@ def draw_world(ax, states, routes):
 
     for route in routes:
 
-        source = route.source.name
-        destination = route.destination.name
-
-        source_label = None
-        destination_label = None
-
-        for node in G.nodes:
-
-            if node.startswith(source):
-                source_label = node
-
-            if node.startswith(destination):
-                destination_label = node
-
-        if source_label and destination_label:
-
-            G.add_edge(
-                source_label,
-                destination_label,
-                weight=route.daily_travellers
-            )
+        G.add_edge(
+            route.source.name,
+            route.destination.name,
+            weight=route.daily_travellers
+        )
 
     # =====================
     # COLORS
@@ -85,18 +55,13 @@ def draw_world(ax, states, routes):
     # POSITIONS
     # =====================
 
-    pos = {}
-
-    for node in G.nodes:
-
-        state_name = node.split("\n")[0]
-
-        pos[node] = POSITIONS[
-            state_name
-        ]
+    pos = nx.spring_layout(
+        G,
+        seed=42
+    )
 
     # =====================
-    # DRAW
+    # DRAW NODES
     # =====================
 
     nx.draw_networkx_nodes(
@@ -110,12 +75,9 @@ def draw_world(ax, states, routes):
         ax=ax
     )
 
-    nx.draw_networkx_labels(
-        G,
-        pos,
-        font_size=8,
-        ax=ax
-    )
+    # =====================
+    # DRAW EDGES
+    # =====================
 
     nx.draw_networkx_edges(
         G,
@@ -123,6 +85,10 @@ def draw_world(ax, states, routes):
         width=2,
         ax=ax
     )
+
+    # =====================
+    # EDGE LABELS
+    # =====================
 
     edge_labels = nx.get_edge_attributes(
         G,
@@ -137,12 +103,27 @@ def draw_world(ax, states, routes):
         ax=ax
     )
 
+    # =====================
+    # NODE LABELS
+    # =====================
+
     labels = {}
 
     for node in G.nodes:
 
+        state_obj = next(
+            s for s in states
+            if s.name == node
+        )
+
+        player_marker = ""
+
+        if state_obj.is_player:
+            player_marker = "\n [PLAYER]"
+
         labels[node] = (
-            f"{node}\n"
+            f"{node}"
+            f"{player_marker}\n"
             f"I:{G.nodes[node]['infected']}\n"
             f"D:{G.nodes[node]['dead']}"
         )
@@ -154,6 +135,10 @@ def draw_world(ax, states, routes):
         font_size=8,
         ax=ax
     )
+
+    # =====================
+    # FINAL TOUCHES
+    # =====================
 
     ax.set_title(
         "Live Epidemic Spread"

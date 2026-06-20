@@ -16,6 +16,11 @@ class Technocracy(Government):
 
         self.research_bonus = 1.5
 
+        self.testing_bonus = 1.3
+        self.treatment_bonus = 1.2
+
+        self.support_decay = 1.1
+
     def check_collapse(self):
 
         if self.legitimacy < 20:

@@ -8,19 +8,16 @@ from ui.action_panel import ActionPanel
 
 class MainWindow:
 
-    def __init__(self, manager):
+    def __init__(
+        self,
+        parent,
+        manager,
+        app
+    ):
 
+        self.app = app
         self.manager = manager
-
-        self.root = tk.Tk()
-
-        self.root.title(
-            "Pandemic Government Simulator"
-        )
-
-        self.root.geometry(
-            "1200x800"
-        )
+        self.root = parent
 
         self.selected_state = None
 
@@ -139,27 +136,6 @@ class MainWindow:
             self.manager
         )
 
-        # =====================
-        # CONTROL PANEL
-        # =====================
-
-        self.control_frame = tk.Frame(
-            self.root,
-            relief="solid",
-            borderwidth=1
-        )
-
-        self.control_frame.pack(
-            fill="x",
-            padx=5,
-            pady=5
-        )
-
-        self.control_panel = ControlPanel(
-            self.control_frame,
-            self.manager
-        )
-
         # TEMP LABELS
 
         '''tk.Label(
@@ -239,9 +215,15 @@ class MainWindow:
 
         if self.manager.game.game_over:
 
-            self.status_label.config(
-                text=f"GAME OVER: {self.manager.game.reason}",
-                fg="red"
+            self.app.show_end_screen(
+                self.manager.game.reason
+            )
+
+            from tkinter import messagebox
+
+            messagebox.showinfo(
+                "Game Over",
+                self.manager.game.reason
             )
 
             return
@@ -251,9 +233,7 @@ class MainWindow:
             self.update_loop
         )
 
-    def run(self):
+    def start(self):
 
         self.update_loop()
-
-        self.root.mainloop()
         

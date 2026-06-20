@@ -1,4 +1,4 @@
-import random
+'''import random
 
 from models.virus import Virus
 from models.human import Human
@@ -11,6 +11,7 @@ from engine.sim import Simulation
 from data.db import clear_db
 from ui.main_window import MainWindow
 from engine.sim_manager import SimulationManager
+from world.world_generator import WorldGenerator
 
 virus = Virus(
     "zvirus",
@@ -82,6 +83,12 @@ routes = [
 
 ]
 
+states,routes = WorldGenerator.generate(
+        6,
+        1000,
+        "technocracy"
+)
+
 simulation = Simulation()
 
 manager = SimulationManager(
@@ -101,7 +108,7 @@ window.selected_state = states[0]
 window.state_panel.update_state(
     states[0]
 )
-'''
+
 window.events_feed.add_event(
     "Day 1: Patient Zero"
 )
@@ -112,7 +119,7 @@ window.events_feed.add_event(
 
 window.events_feed.add_event(
     "Day 5: Mutation Surge"
-)'''
+)
 
 window.map_panel.update_map(
     states,
@@ -156,12 +163,12 @@ government_types = [
 
 clear_db()
 
-'''simulation = Simulation()
+simulation = Simulation()
 
 days=100
-simulation.run(states, virus, routes, days)'''
+simulation.run(states, virus, routes, days)
 
-'''for day in range(100):
+for day in range(100):
 
     print(f"\n===== Day {day+1} =====")
 
@@ -178,3 +185,10 @@ simulation.run(states, virus, routes, days)'''
         mutation = random.choice(MUTATIONS)
 
         virus.add_mutation(mutation)'''
+
+
+from ui.app import App
+
+app = App()
+
+app.run()

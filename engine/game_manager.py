@@ -4,7 +4,7 @@ class GameManager:
 
         self.game_over = False
         self.winner = None
-        self.reason = None
+        self.reason = ""
 
     def check_loss(self, states):
 
@@ -70,28 +70,56 @@ class GameManager:
     def check_win(self, states):
 
         total_infected = 0
-        total_dead = 0
-        total_healthy = 0
+
+        avg_gdp = 0
+        avg_support = 0
 
         for state in states:
 
-            healthy, infected, dead = (
+            _, infected, _ = (
                 state.get_stats()
             )
 
             total_infected += infected
-            total_dead += dead
-            total_healthy += healthy
-        
-        dead_ratio = total_dead / (total_infected + total_dead + total_healthy )
+
+            avg_gdp += (
+                state.government
+                .economy.gdp
+            )
+
+            avg_support += (
+                state.government
+                .public_support
+            )
+
+        avg_gdp /= len(states)
+        avg_support /= len(states)
 
         if total_infected == 0:
 
             self.game_over = True
 
-            self.reason = (
-                "Virus Eradicated"
-            )
+            if (
+                avg_gdp > 70
+                and
+                avg_support > 60
+            ):
+
+                self.reason = (
+                    "Perfect Victory"
+                )
+
+            elif avg_gdp < 40:
+
+                self.reason = (
+                    "Pyrrhic Victory"
+                )
+
+            else:
+
+                self.reason = (
+                    "Victory"
+                )
 
             return True
 

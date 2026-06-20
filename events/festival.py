@@ -22,7 +22,6 @@ class Festival(Event):
 
         target.density *= 1.5
 
-        print(
-            f"\nEVENT: Festival in "
-            f"{target.name}"
+        return (
+            f"Festival in {target.name}"
         )

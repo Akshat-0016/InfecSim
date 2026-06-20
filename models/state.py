@@ -26,14 +26,18 @@ class State:
         self.name = name
         self.population = []
 
+        self.infected_population = []
+
         self.population_size = population_size
         self.density = density
         self.healthcare = healthcare
         self.infrastructure = infrastructure
 
-        self.infected_population = []
+        self.recovery_bonus = 1.0
+        self.infection_resistance = 1.0
 
         self.is_player=is_player
+        self.active_policies = []    
 
         if government_type == "democracy":
 
@@ -55,7 +59,9 @@ class State:
 
 
     def daily_updates(self):
-        print(f"{State.count_infected(self)}% number of ppl infected.")
+        print(
+        f"{self.count_infected() * 100:.1f}% infected"
+    )
         
     def count_infected(self):
 
@@ -117,3 +123,15 @@ GDP : {self.government.economy.gdp:.2f}
                 dead += 1
 
         return healthy, infected, dead
+    
+    def infected_count(self):
+
+        _, infected, _ = self.get_stats()
+
+        return infected
+    
+    def dead_count(self):
+
+        _, _, dead = self.get_stats()
+
+        return dead

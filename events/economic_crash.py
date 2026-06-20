@@ -18,6 +18,4 @@ class EconomicCrash(Event):
 
             state.government.economy.gdp *= 0.95
 
-        print(
-            "\nEVENT: Global Economic Crash"
-        )
+        return "Global Economic Crash"

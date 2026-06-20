@@ -42,7 +42,26 @@ def simulate_day(state, virus):
 
         for _ in range(contacts):
 
-            if random.random() < virus.infectivity:
+            effective_infectivity = (
+                virus.infectivity *
+                max(
+                    0.4,
+                    1 -
+                    state.government.testing_level * 0.1
+                )
+            )
+            
+            if state.government.rapid_testing:
+
+                effective_infectivity *= 0.8
+
+
+            effective_infectivity = max(
+                0.01,
+                effective_infectivity
+            )
+
+            if random.random() < effective_infectivity:
 
                 target = random.choice(state.population)
 
@@ -54,11 +73,29 @@ def simulate_day(state, virus):
             state.government.healthcare_boost *
             state.healthcare
         ) / state.density
-        if random.random() < virus.mortality:
+
+        if state.government.better_treatment:
+
+                effective_recovery *= 1.3
+
+
+        effective_mortality = (
+            virus.mortality
+        )
+
+        if state.government.vaccine_unlocked:
+
+            effective_recovery += 0.15
+
+            effective_mortality *= 0.5
+
+        if random.random() < effective_mortality:
             human.die()
 
         elif random.random() < effective_recovery:
             human.recovery()
+
+        
 
 class Simulation:
 

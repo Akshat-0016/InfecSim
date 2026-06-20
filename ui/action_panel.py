@@ -1,5 +1,10 @@
 import tkinter as tk
 
+from policies.travel_ban import TravelBan
+from policies.lockdown import Lockdown
+from policies.mass_testing import MassTesting
+from policies.emergency_power import EmergencyPowers
+
 class ActionPanel:
 
     def __init__(
@@ -13,6 +18,14 @@ class ActionPanel:
         self.frame = tk.Frame(parent)
 
         self.frame.pack()
+
+        control_row = tk.Frame(
+            self.frame
+        )
+
+        control_row.pack(
+            pady=5
+        )
 
         tk.Button(
             self.frame,
@@ -37,79 +50,81 @@ class ActionPanel:
             text="Healthcare Boost",
             command=self.healthcare_boost
         ).pack(side="left", padx=5)
-    def lockdown_up(self):
 
-        player = self.get_player()
+        tk.Button(
+            control_row,
+            text="Play",
+            command=self.manager.play
+        ).pack(side="left", padx=5)
 
-        if (
-            player.government.political_capital
-            < 10
-        ):
-            return
+        tk.Button(
+            control_row,
+            text="Pause",
+            command=self.manager.pause
+        ).pack(side="left", padx=5)
 
-        player.government.political_capital -= 10
+        tk.Button(
+            control_row,
+            text="1X",
+            command=lambda:
+            self.manager.set_speed(1000)
+        ).pack(side="left", padx=5)
 
-        player.government.lockdown_strength = min(
-            1.0,
-            player.government.lockdown_strength + 0.1
-        )
+        tk.Button(
+            control_row,
+            text="5X",
+            command=lambda:
+            self.manager.set_speed(200)
+        ).pack(side="left", padx=5)
 
-        self.manager.event_log.add(
-            f"Day {self.manager.day}: Lockdown Increased"
+        tk.Button(
+            control_row,
+            text="20X",
+            command=lambda:
+            self.manager.set_speed(50)
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            self.frame,
+            text="Travel Ban",
+            command=self.travel_ban
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            self.frame,
+            text="Mass Testing",
+            command=self.mass_testing
+        ).pack(
+            side="left",
+            padx=5
         )
 
     def lockdown_down(self):
 
-        player = self.get_player()
+        self.manager.decrease_lockdown()
 
-        if (
-            player.government.political_capital
-            < 10
-        ):
-            return
+    def lockdown_up(self):
 
-        player.government.lockdown_strength = max(
-            0,
-            player.government.lockdown_strength - 0.1
-        )
-
-        self.manager.event_log.add(
-            f"Day {self.manager.day}: Lockdown Decreased"
+        self.manager.enact_policy(
+            Lockdown()
         )
 
     def fund_research(self):
 
-        player = self.get_player()
-
-        if player.government.political_capital < 15:
-            return
-
-        player.government.political_capital -= 15
-
-        player.government.research_funding += 5
-
-        self.manager.event_log.add(
-            f"Day {self.manager.day}: Research Funded"
-        )
+        self.manager.fund_research()
 
     def healthcare_boost(self):
 
-        player = self.get_player()
+        self.manager.boost_healthcare()
 
-        if player.government.political_capital < 20:
-            return
+    def travel_ban(self):
 
-        player.government.political_capital -= 20
-
-        player.government.healthcare_boost += 0.1
-
-        self.manager.event_log.add(
-            f"Day {self.manager.day}: Healthcare Boost"
+        self.manager.enact_policy(
+            TravelBan()
         )
 
-    def get_player(self):
+    def mass_testing(self):
 
-        for state in self.manager.states:
-
-            if state.is_player:
-                return state
+        self.manager.enact_policy(
+            MassTesting()
+        )

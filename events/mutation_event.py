@@ -26,6 +26,7 @@ class MutationEvent(Event):
             mutation
         )
 
-        print(
-            "\nEVENT: Mutation Surge"
+        return (
+            f"Mutation Surge: "
+            f"{mutation.name}"
         )

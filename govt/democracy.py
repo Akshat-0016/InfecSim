@@ -10,11 +10,13 @@ class Democracy(Government):
             ai
         )
 
-        self.stability = 100
+        self.research_bonus = 1.1
 
-        self.election_timer = 365
+        self.support_decay = 0.8
+        self.protest_multiplier = 1.5
 
-        self.research_bonus = 1.2
+        self.testing_bonus = 1.1
+        self.economic_resilience = 1.1
 
     def check_collapse(self):
 
